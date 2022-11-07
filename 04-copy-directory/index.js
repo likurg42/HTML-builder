@@ -16,15 +16,14 @@ const path = require('path');
   const files = await fs.promises.readdir(FILES_PATH);
   const copyFiles = await fs.promises.readdir(FILES_COPY_PATH);
 
-  copyFiles.forEach(async (copyFile) => {
+  for (const copyFile of copyFiles) {
     if (!files.includes(copyFile)) {
       await fs.promises.unlink(path.join(FILES_COPY_PATH, copyFile));
     }
-  });
+  }
 
   files.forEach((file) => {
-    fs
-      .createReadStream(path.join(__dirname, 'files', file))
+    fs.createReadStream(path.join(__dirname, 'files', file))
       .pipe(fs.createWriteStream(path.join(__dirname, 'files-copy', file)));
   });
 
