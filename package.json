@@ -5,7 +5,8 @@
   "scripts": {
     "01-read-file": "node 01-read-file",
     "02-write-file": "node 02-write-file",
-    "03-files-in-folder": "node 03-files-in-folder"
+    "03-files-in-folder": "node 03-files-in-folder",
+    "04-copy-directory": "node 04-copy-directory"
   },
   "author": "evgeniimal",
   "license": "ISC",
