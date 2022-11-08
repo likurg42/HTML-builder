@@ -1,30 +1,40 @@
 const fs = require('fs');
 const path = require('path');
 
-(async () => {
-  const FILES_PATH = path.join(__dirname, 'files');
-  const FILES_COPY_PATH = path.join(__dirname, 'files-copy');
+const FILES_PATH = path.join(__dirname, 'files');
+const FILES_COPY_PATH = path.join(__dirname, 'files-copy');
 
-  fs.access(FILES_COPY_PATH, async (err) => {
-    if (err) {
-      console.log('not exist');
-      // console.error(err);
-      await fs.promises.mkdir(FILES_COPY_PATH);
-    }
-  });
-
-  const files = await fs.promises.readdir(FILES_PATH);
-  const copyFiles = await fs.promises.readdir(FILES_COPY_PATH);
-
-  for (const copyFile of copyFiles) {
-    if (!files.includes(copyFile)) {
-      await fs.promises.unlink(path.join(FILES_COPY_PATH, copyFile));
+const cleanFiles = async (dir) => {
+  const items = await fs.promises.readdir(dir, { withFileTypes: true });
+  for (const item of items) {
+    if (item.isFile()) {
+      await fs.promises.unlink(path.join(dir, item.name));
+    } else {
+      await cleanFiles(path.join(dir, item.name));
+      await fs.promises.rmdir(path.join(dir, item.name));
     }
   }
+};
 
-  files.forEach((file) => {
-    fs.createReadStream(path.join(__dirname, 'files', file))
-      .pipe(fs.createWriteStream(path.join(__dirname, 'files-copy', file)));
-  });
+const copyFiles = async (from, to) => {
+  try {
+    await fs.promises.access(to);
+    await cleanFiles(to);
+  } catch (err) {
+    await fs.promises.mkdir(to);
+  }
 
+  const items = await fs.promises.readdir(from, { withFileTypes: true });
+  for (let item of items) {
+    if (item.isFile()) {
+      fs.createReadStream(path.join(from, item.name))
+        .pipe(fs.createWriteStream(path.join(to, item.name)));
+    } else {
+      await copyFiles(path.join(from, item.name), path.join(to, item.name));
+    }
+  }
+};
+
+(async () => {
+  await copyFiles(FILES_PATH, FILES_COPY_PATH);
 })();
