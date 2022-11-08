@@ -7,7 +7,8 @@
     "02-write-file": "node 02-write-file",
     "03-files-in-folder": "node 03-files-in-folder",
     "04-copy-directory": "node 04-copy-directory",
-    "05-merge-styles": "node 05-merge-styles"
+    "05-merge-styles": "node 05-merge-styles",
+    "06-build-page": "node 06-build-page"
   },
   "author": "evgeniimal",
   "license": "ISC",
